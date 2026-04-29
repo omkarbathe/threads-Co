@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-20 px-6">
+    <div class="mb-12 flex justify-between items-end border-b border-gray-100 pb-6">
+        <div>
+            <h1 class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-2">Account Settings</h1>
+            <h2 class="text-3xl font-serif text-gray-900">Your Profile</h2>
+        </div>
+        <button id="edit-toggle" class="flex items-center text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
+            <i data-lucide="pencil" class="w-3.5 h-3.5 mr-2"></i> Edit Profile
+        </button>
+    </div>
+
+    <form id="profile-form" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+        
+        <div class="space-y-1 group">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">First Name</label>
+            <div class="relative">
+                <p class="view-mode text-sm font-medium py-2">{{ user.first_name or '—' }}</p>
+                <input type="text" name="first_name" value="{{ user.first_name or '' }}" 
+                    class="edit-mode hidden w-full border-b border-black py-2 outline-none text-sm focus:bg-gray-50 transition-colors">
+            </div>
+        </div>
+
+        <div class="space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Last Name</label>
+            <div class="relative">
+                <p class="view-mode text-sm font-medium py-2">{{ user.last_name or '—' }}</p>
+                <input type="text" name="last_name" value="{{ user.last_name or '' }}" 
+                    class="edit-mode hidden w-full border-b border-black py-2 outline-none text-sm">
+            </div>
+        </div>
+
+        <div class="space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Phone Number</label>
+            <div class="relative">
+                <p class="view-mode text-sm font-medium py-2">{{ user.phone or '—' }}</p>
+                <input type="tel" name="phone" value="{{ user.phone or '' }}" 
+                    class="edit-mode hidden w-full border-b border-black py-2 outline-none text-sm">
+            </div>
+        </div>
+
+        <div class="space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Email (Verified)</label>
+            <p class="text-sm font-medium py-2 text-gray-400 italic">{{ user.email }}</p>
+        </div>
+
+        <div class="md:col-span-2 space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Shipping Address</label>
+            <div class="relative">
+                <p class="view-mode text-sm font-medium py-2 leading-relaxed">{{ user.address or 'No address provided' }}</p>
+                <textarea name="address" rows="2" 
+                    class="edit-mode hidden w-full border border-gray-200 p-3 outline-none text-sm focus:border-black">{{ user.address or '' }}</textarea>
+            </div>
+        </div>
+
+        <div id="form-actions" class="hidden md:col-span-2 pt-6 flex space-x-4">
+            <button type="submit" class="bg-black text-white px-8 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-all">
+                Save Changes
+            </button>
+            <button type="button" id="cancel-edit" class="border border-gray-200 px-8 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition-all">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const editBtn = document.getElementById('edit-toggle');
+    const cancelBtn = document.getElementById('cancel-edit');
+    const viewElements = document.querySelectorAll('.view-mode');
+    const editElements = document.querySelectorAll('.edit-mode');
+    const actions = document.getElementById('form-actions');
+
+    function toggleMode() {
+        viewElements.forEach(el => el.classList.toggle('hidden'));
+        editElements.forEach(el => el.classList.toggle('hidden'));
+        actions.classList.toggle('hidden');
+        editBtn.classList.toggle('hidden');
+    }
+
+    editBtn.addEventListener('click', toggleMode);
+    cancelBtn.addEventListener('click', toggleMode);
+</script>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto py-16 px-6 lg:px-8">
+    <div class="mb-12 border-b border-gray-100 pb-8">
+        <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 mb-2">Inventory System</h1>
+        <h2 class="text-4xl font-black uppercase italic tracking-tighter">Add New Product</h2>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div class="lg:col-span-2 space-y-8">
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold uppercase tracking-widest">Product Title</label>
+                <input type="text" name="name" required placeholder="e.g. Cobalt Boxy Tee"
+                    class="w-full border-b-2 border-gray-100 py-3 text-xl focus:border-black outline-none transition-all">
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold uppercase tracking-widest">Description</label>
+                <textarea name="description" rows="4"
+                    class="w-full border-2 border-gray-50 p-4 focus:border-black outline-none transition-all placeholder:text-gray-300"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-red-500">Regular Price
+                        (INR)</label>
+                    <input type="number" name="price" required placeholder="2499"
+                        class="w-full border-b-2 border-gray-100 py-3 focus:border-red-500 outline-none">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-green-600">Sale Price
+                        (Optional)</label>
+                    <input type="number" name="discount_price" placeholder="1899"
+                        class="w-full border-b-2 border-gray-100 py-3 focus:border-green-600 outline-none">
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <label class="text-[10px] font-bold uppercase tracking-widest">Product Image</label>
+                <div
+                    class="relative group h-64 border-2 border-dashed border-gray-200 hover:border-black transition-all flex flex-col items-center justify-center bg-gray-50/50">
+                    <input type="file" name="product_image" id="imageInput" accept="image/*" required
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+
+                    <div id="placeholder" class="text-center z-10 pointer-events-none">
+                        <i data-lucide="image-plus" class="w-10 h-10 mx-auto text-gray-300 mb-2"></i>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Select or Drag Image
+                        </p>
+                    </div>
+
+                    <img id="preview" src="#" alt="Preview"
+                        class="hidden absolute inset-0 w-full h-full object-contain p-2 z-10 bg-white">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 p-8 space-y-8 border border-gray-100">
+            <div class="space-y-4">
+                <h3 class="text-[11px] font-black uppercase tracking-widest border-b border-gray-200 pb-2">
+                    Classification</h3>
+
+                <div class="space-y-2">
+                    <label class="block text-[9px] font-bold uppercase text-gray-500">Gender Target</label>
+                    <select name="gender" class="w-full bg-white border p-2 outline-none">
+                        <option value="Men">Men</option>
+                        <option value="Women">Women</option>
+                        <option value="Unisex">Unisex</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-[9px] font-bold uppercase text-gray-500">Category Selection</label>
+                    <select name="category_id" required class="w-full bg-white border p-2 outline-none text-xs">
+                        {% for cat in categories %}
+                        {# 1. Find Main Categories (Shirts and Bottoms) #}
+                        {% if cat.parent_id is none %}
+                        <optgroup label="{{ cat.name }}">
+
+                            {# 2. Get the actual list of subcategories using .all() #}
+                            {% for sub in cat.subcategories.all() %}
+                            <option value="{{ sub.id }}">{{ sub.name }}</option>
+                            {% endfor %}
+
+                        </optgroup>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-[9px] font-bold uppercase text-gray-500">Slider Collection Tag</label>
+                    <select name="collection_tag" class="w-full bg-white border p-2 outline-none text-xs">
+                        <option value="">None</option>
+                        <option value="Oversized">Oversized Series</option>
+                        <option value="Luxe">Luxe Collection</option>
+                        <option value="New Drop">New Drop</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-4 pt-4 border-t border-gray-200">
+                <label class="flex items-center cursor-pointer">
+                    <input type="checkbox" name="is_featured" class="w-4 h-4 accent-black mr-3">
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Featured on Home</span>
+                </label>
+                <button type="submit"
+                    class="w-full bg-black text-white py-4 font-black uppercase tracking-widest text-[11px] hover:bg-gray-800 transition-all shadow-xl">
+                    Publish Product
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const placeholder = document.getElementById('placeholder');
+
+    imageInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

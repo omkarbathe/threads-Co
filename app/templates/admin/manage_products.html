@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 mb-2">Inventory Control</h1>
+            <h2 class="text-4xl font-black uppercase italic tracking-tighter">Manage Products</h2>
+        </div>
+        <a href="{{ url_for('admin.add_product') }}" class="bg-black text-white px-8 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-all">
+            + New Arrival
+        </a>
+    </div>
+
+    <div class="overflow-x-auto border border-gray-100 bg-white">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-gray-50/50 border-b border-gray-100">
+                    <th class="py-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Image</th>
+                    <th class="py-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Product Details</th>
+                    <th class="py-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Inventory</th>
+                    <th class="py-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Price (INR)</th>
+                    <th class="py-5 px-6 text-[10px] font-black uppercase tracking-widest text-gray-500 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for product in products %}
+                <tr class="group hover:bg-gray-50/30 transition-all">
+                    <td class="py-6 px-6 w-24">
+                        <div class="aspect-[3/4] w-16 overflow-hidden bg-gray-100">
+                            <img src="{{ url_for('static', filename=product.image_url) }}" class="h-full w-full object-cover">
+                        </div>
+                    </td>
+                    <td class="py-6 px-6">
+                        <p class="text-sm font-black uppercase tracking-tight">{{ product.name }}</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">
+                            {{ product.category.name }} &bull; {{ product.gender }}
+                        </p>
+                    </td>
+                    <td class="py-6 px-6">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-mono {% if product.stock < 5 %}text-red-500 font-bold{% endif %}">
+                                {{ product.stock }}
+                            </span>
+                            {% if product.stock < 5 %}
+                            <span class="text-[8px] bg-red-100 text-red-600 px-1.5 py-0.5 font-bold uppercase tracking-tighter">Low</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="py-6 px-6">
+                        {% if product.discount_price %}
+                        <div class="flex flex-col">
+                            <span class="text-sm font-black text-red-600">₹{{ product.discount_price }}</span>
+                            <span class="text-[10px] text-gray-400 line-through">₹{{ product.price }}</span>
+                        </div>
+                        {% else %}
+                        <span class="text-sm font-black">₹{{ product.price }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-6 px-6 text-right">
+                        <div class="flex justify-end gap-6">
+                            <a href="#" class="text-[10px] font-bold uppercase tracking-widest hover:text-black transition-colors">Edit</a>
+                            <form action="{{ url_for('admin.delete_product', id=product.id) }}" method="POST" onsubmit="return confirm('Archive this product?')">
+                                <button class="text-[10px] font-bold uppercase tracking-widest text-red-400 hover:text-red-600">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

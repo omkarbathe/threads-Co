@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="relative h-[75vh] w-full overflow-hidden bg-white pt-6">
+    <div id="hero-slider" class="flex h-full transition-transform duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)]" 
+         style="padding-left: 10%; padding-right: 10%;">
+        
+        {% for product in hero_products %}
+        <div class="slide-item min-w-[80vw] md:min-w-[75vw] h-full relative px-3 transition-all duration-1000 opacity-30 scale-95">
+            <div class="w-full h-full relative overflow-hidden bg-gray-100 shadow-xl rounded-sm">
+                <img src="{{ product.image_url }}" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black/20"></div>
+                
+                <div class="absolute inset-0 flex flex-col justify-end pb-16 px-12 text-white slide-content opacity-0 translate-y-8 transition-all duration-700">
+                    <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-2">{{ product.collection_tag }}</p>
+                    <h1 class="text-5xl md:text-7xl font-black uppercase italic leading-[0.8] mb-6">
+                        {{ product.name.split(' ')[0] }} <br> {{ product.name.split(' ')[1:] | join(' ') }}
+                    </h1>
+                    <a href="{{ url_for('shop.product_detail', id=product.id) }}" 
+                       class="w-fit bg-white text-black px-10 py-4 text-[11px] font-black uppercase tracking-widest hover:invert transition-all">
+                        Shop Drop
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="py-24 max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <h2 class="text-4xl font-black uppercase italic tracking-tighter">The Catalog</h2>
+            <p class="text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold mt-2">Browse by Category</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for cat in categories %}
+        <div class="relative aspect-[3/4] overflow-hidden group bg-gray-100">
+            <img src="https://source.unsplash.com/featured/?fashion,{{ cat.name }}" 
+                 class="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000">
+            <div class="absolute inset-0 bg-black/40 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <h3 class="text-white font-black uppercase italic text-xl">{{ cat.name }}</h3>
+                <div class="flex flex-wrap justify-center gap-2 mt-4 px-4">
+                    {% for sub in cat.subcategories %}
+                    <a href="#" class="text-[9px] bg-white text-black px-2 py-1 uppercase font-bold hover:bg-black hover:text-white transition-all">
+                        {{ sub.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="py-20 bg-[#0a0a0a] text-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 flex justify-between items-center mb-10">
+        <h2 class="text-5xl font-black uppercase italic tracking-tighter text-red-600">The Steal</h2>
+        <div class="h-[1px] flex-grow mx-10 bg-white/10 hidden md:block"></div>
+        <a href="#" class="text-[10px] font-bold uppercase tracking-widest border-b border-red-600 pb-1">View All Markdowns</a>
+    </div>
+
+    <div class="flex overflow-x-auto gap-6 px-6 lg:px-20 pb-10 no-scrollbar">
+        {% for product in steal_deals %}
+        <div class="min-w-[280px] md:min-w-[320px] bg-[#111] p-4 border border-white/5 group relative">
+            <div class="relative aspect-[4/5] overflow-hidden mb-4 bg-gray-900">
+                <img src="{{ product.image_url }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                <div class="absolute top-0 right-0 bg-red-600 px-3 py-1 text-[10px] font-black italic uppercase">
+                    {{ product.discount_percentage }}% Off
+                </div>
+            </div>
+            <h4 class="text-[11px] font-bold uppercase tracking-tight text-gray-400">{{ product.category.name }}</h4>
+            <h3 class="text-sm font-black uppercase mt-1">{{ product.name }}</h3>
+            <div class="flex items-center gap-3 mt-2">
+                <span class="text-lg font-black text-red-500">₹{{ product.discount_price }}</span>
+                <span class="text-xs text-gray-500 line-through">₹{{ product.price }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+<script>
+    let currentSlide = 0;
+    const slider = document.getElementById('hero-slider');
+    const slides = document.querySelectorAll('.slide-item');
+    const totalSlides = slides.length;
+
+    function updateSlideClasses() {
+        slides.forEach((slide, index) => {
+            if (index === currentSlide) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+    }
+
+    function moveSlider() {
+        currentSlide++;
+        if (currentSlide >= totalSlides) {
+            currentSlide = 0; // Sweep back to start
+        }
+
+        // Logic: Move by the width of the slide (75vw on desktop)
+        const slideWidth = window.innerWidth < 768 ? 80 : 75;
+        slider.style.transform = `translateX(-${currentSlide * slideWidth}vw)`;
+        updateSlideClasses();
+    }
+
+    // Initialize
+    if (totalSlides > 0) {
+        updateSlideClasses();
+        setInterval(moveSlider, 5000);
+    }
+</script>
+{% endblock %}
