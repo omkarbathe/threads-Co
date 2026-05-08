@@ -1,6 +1,6 @@
     # app/utils.py
 from functools import wraps
-from flask import session, redirect, url_for, flash
+from flask import session, redirect, url_for, flash,g
 from app.models.models import User
 
 def login_required(f):

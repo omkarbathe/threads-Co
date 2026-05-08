@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 py-20 text-center">
+    <!-- ... (Keep your summary UI from before) ... -->
+    
+    <button id="rzp-button" class="bg-black text-white px-16 py-5 text-[11px] uppercase tracking-[0.3em] hover:bg-stone-800 transition-all duration-500">
+        Pay ₹{{ "{:,.2f}".format(total_rupees) }}
+    </button>
+</div>
+
+<!-- RAZORPAY SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "{{ key_id }}", 
+        "amount": "{{ amount }}", 
+        "currency": "INR",
+        "name": "Threads & Co.",
+        "order_id": "{{ order_id }}",
+        "handler": function (response){
+            // If payment is successful, send data to our verification route
+            window.location.href = "/cart/verify-payment?ord_id=" + response.razorpay_order_id + 
+                                   "&pay_id=" + response.razorpay_payment_id + 
+                                   "&sig=" + response.razorpay_signature;
+        },
+        "prefill": {
+            "name": "{{ user.first_name }} {{ user.last_name }}",
+            "contact": "{{ user.phone }}"
+        },
+        "theme": { "color": "#000000" }
+    };
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+
+    
+</script>
+    
+{% endblock %}

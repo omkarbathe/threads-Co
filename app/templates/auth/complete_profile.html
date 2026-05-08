@@ -1,49 +1,56 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="max-w-3xl mx-auto py-20 px-6">
-    <div class="text-center mb-16">
-        <h1 class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.5em] mb-4">Final Step</h1>
-        <h2 class="text-4xl font-serif text-gray-900">Complete Your Profile</h2>
-        <p class="mt-4 text-sm text-gray-500 italic">Please provide your details for seamless shipping and service.</p>
-    </div>
+<div class="min-h-[80vh] flex items-center justify-center py-20 px-6">
+    <div class="max-w-md w-full">
+        <h1 class="text-2xl font-light tracking-widest uppercase mb-8 text-center">Edit Profile</h1>
 
-    <form method="POST" class="space-y-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div class="border-b border-gray-200 pb-2">
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">First Name</label>
-                <input type="text" name="first_name" required class="w-full bg-transparent outline-none text-sm py-1">
-            </div>
-            <div class="border-b border-gray-200 pb-2">
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Last Name</label>
-                <input type="text" name="last_name" required class="w-full bg-transparent outline-none text-sm py-1">
-            </div>
-
-            <div class="border-b border-gray-200 pb-2 md:col-span-2">
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Mobile Number</label>
-                <input type="tel" name="phone" placeholder="+91" required class="w-full bg-transparent outline-none text-sm py-1">
+        <form method="POST" class="space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[9px] uppercase tracking-widest text-stone-400">First Name</label>
+                    <input type="text" name="first_name" value="{{ user.first_name or '' }}" required 
+                           class="w-full bg-stone-50 border-none px-4 py-3 text-xs focus:ring-1 focus:ring-black">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[9px] uppercase tracking-widest text-stone-400">Last Name</label>
+                    <input type="text" name="last_name" value="{{ user.last_name or '' }}" required 
+                           class="w-full bg-stone-50 border-none px-4 py-3 text-xs focus:ring-1 focus:ring-black">
+                </div>
             </div>
 
-            <div class="border-b border-gray-200 pb-2 md:col-span-2">
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Shipping Address</label>
-                <input type="text" name="address" required class="w-full bg-transparent outline-none text-sm py-1">
+            <div class="space-y-1">
+                <label class="text-[9px] uppercase tracking-widest text-stone-400">Contact Number</label>
+                <input type="tel" name="phone" value="{{ user.phone or '' }}" required 
+                       class="w-full bg-stone-50 border-none px-4 py-3 text-xs focus:ring-1 focus:ring-black">
             </div>
 
-            <div class="border-b border-gray-200 pb-2">
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">City</label>
-                <input type="text" name="city" required class="w-full bg-transparent outline-none text-sm py-1">
+            <div class="space-y-1">
+                <label class="text-[9px] uppercase tracking-widest text-stone-400">Shipping Address</label>
+                <textarea name="address" required rows="3" 
+                          class="w-full bg-stone-50 border-none px-4 py-3 text-xs focus:ring-1 focus:ring-black">{{ user.address or '' }}</textarea>
             </div>
-            <div class="border-b border-gray-200 pb-2">
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Pincode</label>
-                <input type="text" name="pincode" required class="w-full bg-transparent outline-none text-sm py-1">
-            </div>
-        </div>
 
-        <div class="pt-10">
-            <button type="submit" class="w-full bg-black text-white py-5 text-[11px] font-bold uppercase tracking-[0.3em] hover:bg-gray-800 transition-all">
-                Access the Collection
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[9px] uppercase tracking-widest text-stone-400">City</label>
+                    <input type="text" name="city" value="{{ user.city or '' }}" required 
+                           class="w-full bg-stone-50 border-none px-4 py-3 text-xs focus:ring-1 focus:ring-black">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[9px] uppercase tracking-widest text-stone-400">Pincode</label>
+                    <input type="text" name="pincode" value="{{ user.pincode or '' }}" required 
+                           class="w-full bg-stone-50 border-none px-4 py-3 text-xs focus:ring-1 focus:ring-black">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-black text-white py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-stone-800 transition-colors">
+                Save Changes
             </button>
-        </div>
-    </form>
+            
+            <div class="text-center mt-4">
+                <a href="{{ url_for('main.profile') }}" class="text-[9px] uppercase tracking-widest text-stone-400 hover:text-black">Cancel</a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

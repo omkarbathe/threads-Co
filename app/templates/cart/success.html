@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed | Threads & Co.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-32 text-center">
+    <!-- Success Icon -->
+    <div class="mb-10 flex justify-center">
+        <div class="w-20 h-20 border border-stone-200 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-stone-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+    </div>
+
+    <h2 class="text-[11px] font-bold uppercase tracking-[0.4em] text-stone-400 mb-4">Transaction Successful</h2>
+    <h1 class="text-4xl font-light tracking-[0.1em] uppercase mb-8 text-stone-900">Thank You For Your Order</h1>
+    
+    <p class="text-stone-500 text-sm max-w-md mx-auto leading-relaxed mb-12">
+        Your request is being processed. We are preparing your selection with the utmost care. A confirmation email has been sent to your registered address.
+    </p>
+
+    <!-- Order Details Box -->
+    <div class="bg-stone-50 border border-stone-100 p-8 mb-16 inline-block min-w-[320px]">
+        <div class="space-y-4">
+            <div class="flex justify-between gap-10">
+                <span class="text-[10px] uppercase tracking-widest text-stone-400">Payment ID</span>
+                <span class="text-[11px] font-mono text-stone-800">{{ payment_id }}</span>
+            </div>
+            <div class="flex justify-between gap-10">
+                <span class="text-[10px] uppercase tracking-widest text-stone-400">Status</span>
+                <span class="text-[10px] uppercase tracking-widest font-bold text-green-600">Authorized</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+        <a href="{{ url_for('main.home') }}" 
+           class="bg-black text-white px-12 py-5 text-[11px] uppercase tracking-[0.3em] hover:bg-stone-800 transition duration-500 w-full md:w-auto">
+            Continue Browsing
+        </a>
+        <!-- In the future, this will link to their order history -->
+        <a href="#" class="text-[10px] uppercase tracking-widest text-stone-400 hover:text-black transition border-b border-stone-200 pb-1">
+            View Order Status
+        </a>
+    </div>
+</div>
+{% endblock %}

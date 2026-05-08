@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Catalog | Threads & Co.{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<div class="relative h-[30vh] bg-stone-50 flex items-center justify-center overflow-hidden">
+    <div class="text-center px-6">
+        <h1 class="text-2xl md:text-3xl font-light tracking-[0.4em] uppercase mb-2 text-stone-800">
+            {% if title %}{{ title }}{% else %}The Catalog{% endif %}
+        </h1>
+        <p class="text-[8px] uppercase tracking-[0.5em] text-stone-400 font-medium">Threads & Co. Studio Selection</p>
+    </div>
+</div>
+
+<!-- MAIN GRID CONTAINER -->
+<div class="max-w-6xl mx-auto px-8 lg:px-16 py-12">
+    <!-- Added lg:flex-nowrap to protect sidebar width -->
+    <div class="flex flex-col lg:flex-row lg:flex-nowrap gap-16">
+        
+        <!-- SIDEBAR (Increased width slightly to lg:w-48) -->
+        <aside class="w-full lg:w-48 flex-shrink-0">
+            <div class="sticky top-28">
+                <h2 class="text-[9px] font-bold uppercase tracking-[0.2em] border-b border-stone-100 pb-3 mb-4 text-stone-800 whitespace-nowrap">Collections</h2>
+                <ul class="space-y-3 text-[9px] uppercase tracking-[0.15em] text-stone-400">
+                    <li>
+                        <!-- whitespace-nowrap prevents the text from going to the next line -->
+                        <a href="{{ url_for('main.home') }}" class="hover:text-black transition whitespace-nowrap {% if not request.args.get('category_id') %}text-black font-bold{% endif %}">
+                            All Works
+                        </a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ url_for('main.home', category_id=cat.id) }}" 
+                           class="hover:text-black transition whitespace-nowrap {% if request.args.get('category_id')|int == cat.id %}text-black font-bold{% endif %}">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <h2 class="text-[9px] font-bold uppercase tracking-[0.2em] border-b border-stone-100 pb-3 mb-4 mt-12 text-stone-800 whitespace-nowrap">Sequence</h2>
+                <form method="GET" action="{{ request.path }}">
+                    <select name="sort" onchange="this.form.submit()" class="w-full bg-transparent border-none text-[9px] uppercase tracking-widest p-0 focus:ring-0 cursor-pointer text-stone-400 hover:text-black transition">
+                        <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+                        <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low</option>
+                        <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High</option>
+                    </select>
+                </form>
+            </div>
+        </aside>
+
+        <!-- PRODUCT GRID -->
+        <main class="flex-grow">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+                {% for product in products %}
+                <div class="group">
+                    <a href="{{ url_for('main.product_detail', id=product.id) }}" class="block aspect-[3/4] overflow-hidden bg-stone-50 relative">
+                        <img src="{{ product.image_url }}" 
+                             alt="{{ product.name }}" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
+                    </a>
+
+                    <div class="mt-4 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-[10px] uppercase tracking-widest font-medium text-stone-900 leading-tight">{{ product.name }}</h3>
+                            <p class="text-[8px] text-stone-400 mt-1 uppercase tracking-wider">{{ product.category.name }}</p>
+                        </div>
+                        <p class="text-[10px] font-medium text-stone-900 tracking-tight">₹{{ "{:,.0f}".format(product.price / 100) }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-span-full py-24 text-center border border-dashed border-stone-100">
+                    <p class="text-[9px] uppercase tracking-widest text-stone-300">No pieces available.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</div>
+
+{% endblock %}

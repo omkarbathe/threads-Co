@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Dialogue | Threads & Co.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-8 lg:px-16 py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-20">
+        
+        <!-- Left: Context -->
+        <div class="lg:col-span-4 sticky top-32">
+            <h1 class="text-[10px] uppercase tracking-[0.5em] text-stone-400 mb-6 block font-bold">Dialogue</h1>
+            <h2 class="text-4xl font-normal tracking-tight text-stone-900 leading-tight mb-8 uppercase">
+                Refining the <br>Atelier.
+            </h2>
+            <p class="text-[11px] text-stone-500 leading-relaxed uppercase tracking-widest max-w-xs">
+                As a registered client, your feedback is directly linked to your profile, allowing our curators to provide a more personalized response.
+            </p>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="lg:col-span-8 bg-stone-50 p-10 lg:p-16 rounded-sm border border-stone-100">
+            <form action="{{ url_for('main.feedback') }}" method="POST" class="space-y-12">
+                
+                <!-- Auto-filled Identity -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-3 border-b border-stone-200 pb-2">
+                        <label class="text-[9px] uppercase tracking-widest text-stone-400 font-bold">Full Name</label>
+                        <!-- Using value from g.current_user -->
+                        <input type="text" name="name" value="{{ g.current_user.first_name }} {{ g.current_user.last_name }}" readonly
+                            class="w-full bg-transparent border-none p-0 text-[11px] uppercase tracking-widest focus:ring-0 text-stone-400 cursor-not-allowed">
+                    </div>
+                    <div class="space-y-3 border-b border-stone-200 pb-2">
+                        <label class="text-[9px] uppercase tracking-widest text-stone-400 font-bold">Email Address</label>
+                        <input type="email" name="email" value="{{ g.current_user.email }}" readonly
+                            class="w-full bg-transparent border-none p-0 text-[11px] uppercase tracking-widest focus:ring-0 text-stone-400 cursor-not-allowed">
+                    </div>
+                </div>
+
+                <!-- Subject -->
+                <div class="space-y-6">
+                    <label class="text-[9px] uppercase tracking-widest text-stone-400 font-bold block">Inquiry Type</label>
+                    <div class="flex flex-wrap gap-3">
+                        {% for subject in ['Collection Quality', 'Digital Experience', 'Studio Service', 'Other'] %}
+                        <label class="relative">
+                            <input type="radio" name="subject" value="{{ subject }}" class="peer hidden" {% if loop.first %}checked{% endif %}>
+                            <div class="px-6 py-2.5 border border-stone-200 text-[9px] uppercase tracking-widest cursor-pointer peer-checked:bg-black peer-checked:text-white peer-checked:border-black transition-all">
+                                {{ subject }}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Message -->
+                <div class="space-y-4">
+                    <label class="text-[9px] uppercase tracking-widest text-stone-400 font-bold">Observations</label>
+                    <textarea name="message" rows="6" required placeholder="SHARE YOUR THOUGHTS WITH THE ATELIER..."
+                        class="w-full bg-white border border-stone-200 p-6 text-[11px] uppercase tracking-widest focus:ring-0 focus:border-stone-900 transition-all placeholder:text-stone-200 text-stone-800 resize-none"></textarea>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit" class="group flex items-center gap-8 bg-black text-white px-12 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-stone-800 transition-all">
+                        Transmit Message
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>lucide.createIcons();</script>
+{% endblock %}

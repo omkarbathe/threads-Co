@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-8 lg:px-16 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-24">
+        
+        <!-- Left: Product Image -->
+        <div class="aspect-[3/4] bg-stone-50 overflow-hidden rounded-sm">
+            <img src="{{ product.image_url }}" 
+                 alt="{{ product.name }}" 
+                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 grayscale-[10%] hover:grayscale-0">
+        </div>
+
+        <!-- Right: Info & Purchase -->
+        <div class="flex flex-col justify-center">
+            <nav class="mb-6">
+                <span class="text-[9px] uppercase tracking-[0.4em] text-stone-400 font-medium">
+                    {{ product.category.name }} • {{ product.gender }}
+                </span>
+            </nav>
+
+            <h1 class="text-3xl font-light text-stone-900 mb-4 uppercase tracking-widest">{{ product.name }}</h1>
+            <p class="text-lg font-medium text-stone-800 mb-10">₹ {{ "{:,.0f}".format(product.price / 100) }}</p>
+
+            <div class="prose prose-stone mb-12">
+                {% for para in paragraphs %}
+                    <p class="text-[11px] text-stone-500 leading-relaxed font-light mb-4 uppercase tracking-wide">{{ para }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- PURCHASE FORM -->
+            <form id="purchase-form" action="{{ url_for('cart.add', id=product.id) }}" method="POST" class="space-y-10 border-t border-stone-100 pt-10">
+                
+                <!-- Size Selection -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[9px] uppercase tracking-[0.3em] font-bold text-stone-400 block">Select Size</label>
+                        <a href="{{ url_for('main.size_guide') }}" class="text-[8px] uppercase tracking-widest text-stone-300 hover:text-black border-b border-transparent hover:border-black transition-all">Size Guide</a>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        {% for variant in product.variants %}
+                            <label class="relative">
+                                <input type="radio" name="variant_id" value="{{ variant.id }}" class="peer hidden" {% if variant.stock == 0 %}disabled{% endif %} required>
+                                <div class="px-5 py-2.5 border border-stone-100 text-[10px] tracking-widest cursor-pointer peer-checked:bg-black peer-checked:text-white peer-checked:border-black peer-disabled:opacity-20 peer-disabled:cursor-not-allowed transition-all uppercase">
+                                    {{ variant.size }}
+                                </div>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="flex items-center space-x-8">
+                    <label class="text-[9px] uppercase tracking-[0.3em] font-bold text-stone-400">Quantity</label>
+                    <div class="flex items-center border border-stone-100 h-10">
+                        <button type="button" onclick="changeQty(-1)" class="px-4 py-2 hover:bg-stone-50 transition text-stone-300 hover:text-black">-</button>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" readonly
+                            class="w-10 text-center text-[10px] outline-none bg-transparent border-none focus:ring-0 font-bold">
+                        <button type="button" onclick="changeQty(1)" class="px-4 py-2 hover:bg-stone-50 transition text-stone-300 hover:text-black">+</button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col space-y-3">
+                    <!-- Added id for the cart button to distinguish in JS -->
+                    <button type="submit" id="add-to-cart-btn" class="w-full bg-black text-white py-4 text-[9px] uppercase tracking-[0.4em] font-bold hover:bg-stone-800 transition-all">
+                        Add to Atelier Bag
+                    </button>
+                    
+                    <button type="button" onclick="handleDirectBuy()" class="w-full bg-stone-50 text-stone-900 py-4 text-[9px] uppercase tracking-[0.4em] font-bold hover:bg-stone-100 transition-all">
+                        Buy It Now
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-12 space-y-3 pt-10 border-t border-stone-100">
+                <p class="text-[9px] uppercase tracking-[0.2em] text-stone-400"><strong class="text-stone-900 font-semibold">SKU:</strong> {{ product.sku }}</p>
+                <p class="text-[9px] uppercase tracking-[0.2em] text-stone-400"><strong class="text-stone-900 font-semibold">Material:</strong> {{ product.material }}</p>
+                <p class="text-[9px] uppercase tracking-[0.2em] text-stone-400"><strong class="text-stone-900 font-semibold">Origin:</strong> {{ product.origin }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('purchase-form');
+
+    // unified trigger for the Right-Side Flash
+    function triggerFlash(message) {
+        const container = document.getElementById('flash-container');
+        if (!container) return;
+
+        const popup = document.createElement('div');
+        popup.className = "flash-popup flex items-center p-5 min-w-[300px] bg-white border border-l-4 border-l-black shadow-2xl transition-all duration-500 pointer-events-auto opacity-0 translate-x-10";
+        
+        popup.innerHTML = `
+            <p class="text-[10px] font-bold uppercase tracking-widest text-stone-800">${message}</p>
+            <button type="button" class="ml-auto pl-6 opacity-30 hover:opacity-100">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+        `;
+
+        container.appendChild(popup);
+        lucide.createIcons();
+
+        setTimeout(() => {
+            popup.classList.remove('opacity-0', 'translate-x-10');
+            popup.classList.add('opacity-100', 'translate-x-0');
+        }, 10);
+
+        const autoRemove = setTimeout(() => closePopup(popup), 6000);
+
+        popup.querySelector('button').onclick = () => {
+            clearTimeout(autoRemove);
+            closePopup(popup);
+        };
+    }
+
+    function closePopup(el) {
+        el.classList.add('opacity-0', 'translate-x-10');
+        setTimeout(() => el.remove(), 600);
+    }
+
+    // Single validation function
+    function isSizeSelected() {
+        const selectedSize = form.querySelector('input[name="variant_id"]:checked');
+        if (!selectedSize) {
+            triggerFlash("Please select a size to proceed");
+            return false;
+        }
+        return true;
+    }
+
+    // Intercept Add to Cart
+    form.onsubmit = function(e) {
+        if (!isSizeSelected()) {
+            e.preventDefault();
+            return false;
+        }
+    };
+
+    // Handle Buy Now
+    function handleDirectBuy() {
+        if (isSizeSelected()) {
+            // Change action and submit
+            form.action = "{{ url_for('cart.buy_now', id=product.id) }}";
+            form.submit();
+        }
+    }
+
+    function changeQty(amount) {
+        const qtyInput = document.getElementById('quantity');
+        let currentVal = parseInt(qtyInput.value);
+        let newVal = currentVal + amount;
+        if (newVal >= 1 && newVal <= 10) {
+            qtyInput.value = newVal;
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Use max-w-6xl and px-8 lg:px-16 to match the "Massive Margin" look -->
+<section class="max-w-6xl mx-auto px-8 lg:px-16 py-16 min-h-[60vh]">
+    
+    <!-- HEADER (Reduced text size and increased letter spacing) -->
+    <div class="flex justify-between items-end mb-16 border-b border-stone-100 pb-10">
+        <h1 class="text-2xl font-light tracking-[0.3em] uppercase text-stone-800">Atelier Bag</h1>
+        <p class="text-[9px] uppercase tracking-[0.4em] text-stone-300 italic">{{ items|length }} Items Selected</p>
+    </div>
+
+    {% if items %}
+    <div class="flex flex-col lg:flex-row gap-20">
+        
+        <!-- LEFT: PRODUCT LIST (Reduced text size) -->
+        <div class="flex-grow divide-y divide-stone-50">
+            {% for item in items %}
+            <div class="flex py-10 first:pt-0 group">
+                <!-- Image matches the boutique 3:4 aspect ratio -->
+                <div class="w-24 h-32 overflow-hidden bg-stone-50 rounded-sm flex-shrink-0">
+                    <img src="{{ item.variant.product.image_url }}" 
+                         class="w-full h-full object-cover grayscale-[20%] group-hover:scale-105 transition-transform duration-700">
+                </div>
+                
+                <div class="ml-10 flex-grow py-1 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-900">{{ item.variant.product.name }}</h3>
+                            <p class="text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-2">Size: {{ item.variant.size }}</p>
+                        </div>
+                        <p class="text-[10px] font-medium text-stone-900">₹ {{ "{:,.0f}".format(item.variant.product.price / 100) }}</p>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-8">
+                        <!-- Quantity Control -->
+                        <form action="{{ url_for('cart.update', id=item.id) }}" method="POST" class="flex items-center border border-stone-100 px-1">
+                            <button name="quantity" value="{{ item.quantity - 1 }}" class="px-3 py-1 text-stone-300 hover:text-black transition">-</button>
+                            <span class="px-3 text-[10px] font-bold text-stone-800">{{ item.quantity }}</span>
+                            <button name="quantity" value="{{ item.quantity + 1 }}" class="px-3 py-1 text-stone-300 hover:text-black transition">+</button>
+                        </form>
+                        
+                        <a href="{{ url_for('cart.remove', id=item.id) }}" class="text-[8px] uppercase tracking-[0.3em] text-stone-300 hover:text-red-400 transition-colors">
+                            Remove
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- RIGHT: SUMMARY SIDEBAR (Consistent with Sidebar scaling) -->
+        <aside class="w-full lg:w-80 flex-shrink-0">
+            <div class="bg-stone-50 p-8 sticky top-28 border border-stone-100">
+                <h2 class="text-[9px] uppercase tracking-[0.3em] font-bold mb-8 border-b border-stone-200 pb-4 text-stone-800">Summary</h2>
+                
+                <div class="space-y-4 mb-10">
+                    <div class="flex justify-between text-[9px] uppercase tracking-widest">
+                        <span class="text-stone-400 font-light">Subtotal</span>
+                        <span class="text-stone-900">₹ {{ "{:,.0f}".format(total) }}</span>
+                    </div>
+                    <div class="flex justify-between text-[9px] uppercase tracking-widest">
+                        <span class="text-stone-400 font-light">Shipping</span>
+                        <span class="text-[8px] tracking-tighter text-green-600 font-bold">Complimentary</span>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between border-t border-stone-200 pt-6 mb-10">
+                    <span class="text-[10px] uppercase font-bold tracking-widest">Total</span>
+                    <span class="text-sm font-semibold text-stone-900">₹ {{ "{:,.0f}".format(total) }}</span>
+                </div>
+                
+                <a href="{{ url_for('cart.checkout') }}" class="block w-full bg-black text-white text-center py-4 text-[9px] uppercase tracking-[0.4em] font-bold hover:bg-stone-800 transition-all">
+                    Proceed to Checkout
+                </a>
+                
+                <div class="mt-6 text-center">
+                    <a href="{{ url_for('main.home') }}" class="text-[8px] uppercase tracking-[0.3em] text-stone-400 hover:text-black transition">
+                        Continue Browsing
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+    
+    {% else %}
+    <!-- EMPTY STATE -->
+    <div class="py-32 text-center">
+        <p class="text-[9px] uppercase tracking-[0.4em] text-stone-300">Your bag is as light as silk (it's empty).</p>
+        <a href="{{ url_for('main.home') }}" class="inline-block mt-8 border-b border-black text-[9px] uppercase tracking-[0.3em] pb-1 hover:text-stone-500 hover:border-stone-500 transition-all">
+            Continue Exploring
+        </a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

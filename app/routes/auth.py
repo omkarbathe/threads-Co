@@ -4,10 +4,10 @@ from app import db
 from app.models.models import User
 
 
-bp = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__)
 
 
-@bp.route('/login')
+@auth.route('/login')
 def login():
     # Building the URL from your .env variables
     domain = os.getenv('COGNITO_DOMAIN')
@@ -25,8 +25,7 @@ def login():
     return redirect(login_url)
 
 
-
-@bp.route('/callback')
+@auth.route('/callback')
 def callback():
     # 1. Get the Authorization Code from Cognito
     code = request.args.get('code')
@@ -83,54 +82,45 @@ def callback():
         db.session.add(user)
         db.session.commit()
     
-    # 6. SESSION SYNC (The Fix for "None" Name)
+    # 6. SESSION SYNC
     session.permanent = True
     session['user_id'] = user.id
     session['email'] = user.email
     session['is_admin'] = user.is_admin
     session['is_onboarded'] = user.is_onboarded
 
-    # Logically determine the name to show in the Header
+    # Determine display name
     if user.first_name and user.last_name:
         session['user_name'] = f"{user.first_name} {user.last_name}"
     elif user.first_name:
         session['user_name'] = user.first_name
     else:
-        # Fallback to email prefix if no name exists yet
         session['user_name'] = email.split('@')[0].title()
 
-    # 7. Redirect Based on Onboarding Status
+    # 7. ROUTING LOGIC (The Fix)
+    
+    # Priority A: Admins go straight to management
+    if user.is_admin:
+        flash(f"Welcome to the Atelier Command Center, {session['user_name']}", "success")
+        return redirect(url_for('admin.dashboard'))
+
+    # Priority B: Non-onboarded customers must finish setup
     if not user.is_onboarded:
         flash("Please complete your profile to continue.", "info")
         return redirect(url_for('auth.complete_profile'))
 
-    flash(f"Welcome back, {user.first_name or session['user_name']}", "success")
+    # Priority C: Onboarded customers go to the gallery
+    flash(f"Welcome back, {session['user_name']}", "success")
     return redirect(url_for('main.home'))
 
 
-
-@bp.route('/logout')
+@auth.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('main.home'))
 
 
-@bp.route('/register')
-def register():
-    return render_template('auth/register.html')
-
-@bp.route('/wishlist')
-def wishlist():
-    # You'll likely want to protect this with a login_required decorator later
-    return render_template('auth/wishlist.html')
-
-@bp.route('/cart')
-def cart():
-    return render_template('shop/cart.html')
-
-
-
-@bp.route('/complete-profile', methods=['GET', 'POST'])
+@auth.route('/complete-profile', methods=['GET', 'POST'])
 def complete_profile():
     user_id = session.get('user_id')
     if not user_id:
@@ -138,11 +128,8 @@ def complete_profile():
 
     user = User.query.get(user_id)
     
-    # Safety Check: If already done, skip to home
-    if user.is_onboarded:
-        return redirect(url_for('main.home'))
-
     if request.method == 'POST':
+        # Update existing user data with form data
         user.first_name = request.form.get('first_name')
         user.last_name = request.form.get('last_name')
         user.phone = request.form.get('phone')
@@ -150,10 +137,14 @@ def complete_profile():
         user.city = request.form.get('city')
         user.pincode = request.form.get('pincode')
         
-        user.is_onboarded = True  # Flip the switch
+        user.is_onboarded = True  # Ensure this is set to true
         db.session.commit()
         
-        flash("Profile completed. Welcome to Threads & Co.", "success")
-        return redirect(url_for('main.home'))
+        # Update the session name in case they changed their name
+        session['user_name'] = f"{user.first_name} {user.last_name}"
+        
+        flash("Profile updated successfully.", "success")
+        return redirect(url_for('main.profile')) # Redirect back to profile view
 
-    return render_template('auth/complete_profile.html')
+    # Pass the user object to the template so the form can be pre-filled
+    return render_template('auth/complete_profile.html', user=user)

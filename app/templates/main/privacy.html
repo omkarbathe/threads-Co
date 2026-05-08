@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy | Threads & Co.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-12 lg:px-20 py-20">
+    <!-- Header -->
+    <header class="mb-20 border-b border-stone-100 pb-12">
+        <h1 class="text-2xl font-light tracking-[0.4em] uppercase text-stone-800">Privacy Policy</h1>
+        <p class="text-[9px] uppercase tracking-[0.3em] text-stone-400 mt-4 font-medium">Last Updated: May 2026</p>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-24">
+        <!-- Sticky Navigation for Policy Sections -->
+        <aside class="w-full lg:w-48 flex-shrink-0">
+            <div class="sticky top-28">
+                <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] mb-6 text-stone-800">Sections</h2>
+                <ul class="space-y-4 text-[9px] uppercase tracking-widest text-stone-400">
+                    <li><a href="#collection" class="hover:text-black transition">01. Collection</a></li>
+                    <li><a href="#usage" class="hover:text-black transition">02. Usage</a></li>
+                    <li><a href="#protection" class="hover:text-black transition">03. Protection</a></li>
+                    <li><a href="#rights" class="hover:text-black transition">04. Your Rights</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Policy Content -->
+        <main class="max-w-2xl">
+            <div class="space-y-16">
+                <!-- Section 01 -->
+                <section id="collection">
+                    <h2 class="text-[11px] font-bold uppercase tracking-[0.3em] mb-6 text-stone-900">01. Information Collection</h2>
+                    <p class="text-[11px] leading-relaxed text-stone-500 font-light mb-4">
+                        Threads & Co. collects personal data necessary to provide our bespoke services. This includes identifiers such as your name, contact information, and shipping address provided during checkout or account creation.
+                    </p>
+                    <p class="text-[11px] leading-relaxed text-stone-500 font-light">
+                        We also collect transactional information and browsing data to refine your experience within our digital atelier.
+                    </p>
+                </section>
+
+                <!-- Section 02 -->
+                <section id="usage">
+                    <h2 class="text-[11px] font-bold uppercase tracking-[0.3em] mb-6 text-stone-900">02. Usage of Data</h2>
+                    <p class="text-[11px] leading-relaxed text-stone-500 font-light mb-4">
+                        Your information is utilized solely for:
+                    </p>
+                    <ul class="list-none space-y-3 text-[10px] text-stone-400 uppercase tracking-wider pl-4 border-l border-stone-100">
+                        <li>• Order fulfillment and logistics</li>
+                        <li>• Personalized garment recommendations</li>
+                        <li>• Communication regarding your studio appointments</li>
+                        <li>• Internal analytics to improve our collections</li>
+                    </ul>
+                </section>
+
+                <!-- Section 03 -->
+                <section id="protection">
+                    <h2 class="text-[11px] font-bold uppercase tracking-[0.3em] mb-6 text-stone-900">03. Data Protection</h2>
+                    <p class="text-[11px] leading-relaxed text-stone-500 font-light">
+                        We implement rigorous security protocols to ensure the integrity of your personal information. We do not sell or trade your data to third-party entities. All financial transactions are processed through encrypted, industry-standard gateways.
+                    </p>
+                </section>
+
+                <!-- Section 04 -->
+                <section id="rights">
+                    <h2 class="text-[11px] font-bold uppercase tracking-[0.3em] mb-6 text-stone-900">04. Your Rights</h2>
+                    <p class="text-[11px] leading-relaxed text-stone-500 font-light">
+                        You maintain the right to access, rectify, or request the deletion of your personal data at any time. For inquiries regarding your privacy or to exercise your rights, please contact our privacy officer at <span class="text-stone-800 font-medium">privacy@threadsco.com</span>.
+                    </p>
+                </section>
+            </div>
+
+            <!-- Atelier Closing Note -->
+            <div class="mt-24 pt-12 border-t border-stone-100">
+                <p class="text-[10px] italic text-stone-400 font-light text-center">
+                    Commitment to transparency and discretion is the foundation of our client relationships.
+                </p>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

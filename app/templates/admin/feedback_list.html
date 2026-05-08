@@ -1,0 +1,88 @@
+{% extends "admin_base.html" %}
+{% block title %}Feedback Archive | Threads & Co.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <h1 class="text-[10px] uppercase tracking-[0.4em] text-stone-400 mb-2 font-bold">Client Dialogue</h1>
+            <h2 class="text-2xl font-normal tracking-widest text-stone-900 uppercase">Feedback Archive</h2>
+        </div>
+        <div class="text-right">
+            <p class="text-[9px] uppercase tracking-widest text-stone-400 font-bold">Total Inquiries</p>
+            <p class="text-xl font-bold tabular-nums">{{ feedbacks.total }}</p>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="bg-white border border-stone-200 rounded-sm overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-stone-100 bg-stone-50/50">
+                    <th class="p-6 text-[9px] uppercase tracking-widest font-bold text-stone-400">Status</th>
+                    <th class="p-6 text-[9px] uppercase tracking-widest font-bold text-stone-400">Client</th>
+                    <th class="p-6 text-[9px] uppercase tracking-widest font-bold text-stone-400">Subject</th>
+                    <th class="p-6 text-[9px] uppercase tracking-widest font-bold text-stone-400 text-right">Date Received</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-50">
+                {% for item in feedbacks.items %}
+                <tr class="group hover:bg-stone-50/50 transition-colors cursor-pointer" 
+                    onclick="window.location.href='{{ url_for('admin.view_single_feedback', feedback_id=item.id) }}'">
+                    
+                    <td class="p-6">
+                        <span class="text-[8px] uppercase tracking-tighter font-bold px-2 py-0.5 rounded-sm 
+                            {{ 'bg-stone-900 text-white' if item.status == 'Pending' else 'bg-stone-100 text-stone-400' }}">
+                            {{ item.status }}
+                        </span>
+                    </td>
+                    
+                    <td class="p-6">
+                        <div class="flex flex-col">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-stone-900">{{ item.name }}</span>
+                            <span class="text-[9px] text-stone-400 lowercase">{{ item.email }}</span>
+                        </div>
+                    </td>
+                    
+                    <td class="p-6">
+                        <span class="text-[10px] uppercase tracking-widest text-stone-600">{{ item.subject }}</span>
+                    </td>
+                    
+                    <td class="p-6 text-right">
+                        <span class="text-[9px] text-stone-400 tabular-nums uppercase tracking-widest">
+                            {{ item.created_at.strftime('%d %b %y') }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="p-20 text-center text-[10px] uppercase tracking-[0.3em] text-stone-300 italic">
+                        The archive is currently empty.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Navigation -->
+    {% if feedbacks.pages > 1 %}
+    <div class="mt-8 flex justify-center items-center space-x-12">
+        {% if feedbacks.has_prev %}
+        <a href="{{ url_for('admin.view_feedback', page=feedbacks.prev_num) }}" 
+           class="text-[9px] uppercase tracking-[0.3em] font-bold text-stone-400 hover:text-black transition">Previous</a>
+        {% endif %}
+        
+        <span class="text-[9px] uppercase tracking-[0.3em] font-bold text-stone-900">
+            Page {{ feedbacks.page }} / {{ feedbacks.pages }}
+        </span>
+
+        {% if feedbacks.has_next %}
+        <a href="{{ url_for('admin.view_feedback', page=feedbacks.next_num) }}" 
+           class="text-[9px] uppercase tracking-[0.3em] font-bold text-stone-400 hover:text-black transition">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
